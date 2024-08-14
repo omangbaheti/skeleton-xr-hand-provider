@@ -1,0 +1,16 @@
+{
+    "name": "ubc.ok.ovilab.skeleton-xr-hand-provider",
+    "version": "0.1.0",
+    "displayName": "Skeleton XRHands provider",
+    "description": "XR hand subsystem component that feeds data from a skeleton",
+    "unity": "2021.3",
+    "dependencies": {
+      "com.unity.xr.hands": "1.5.0-pre.2"
+    },
+    "author": {
+        "name": "Shariff Faleel",
+        "email": "shariff.mfa@outlook.com"
+    },
+    "scopedRegistries": [
+    ]
+}
