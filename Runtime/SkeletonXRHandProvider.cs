@@ -9,9 +9,9 @@ namespace ubco.ovilab.SkeletonXRHandProvider
 {
     public class SkeletonXRHandProvider : XRHandSubsystemProvider
     {
-        private IEnumerable<SkeletonKeyPair> rightHandTransforms;
-        private IEnumerable<SkeletonKeyPair> leftHandTransforms;
-        private bool[] handJointsInLayout;
+        internal static IEnumerable<SkeletonKeyPair> rightHandTransforms;
+        internal static IEnumerable<SkeletonKeyPair> leftHandTransforms;
+        internal static bool[] handJointsInLayout;
 
         /// <inheritdoc />
         public override void Destroy()
@@ -28,7 +28,7 @@ namespace ubco.ovilab.SkeletonXRHandProvider
         /// <inheritdoc />
         public override void GetHandLayout(NativeArray<bool> handJointsInLayout)
         {
-            handJointsInLayout.CopyFrom(this.handJointsInLayout);
+            handJointsInLayout.CopyFrom(SkeletonXRHandProvider.handJointsInLayout);
         }
 
         /// <inheritdoc />
@@ -50,34 +50,6 @@ namespace ubco.ovilab.SkeletonXRHandProvider
             }
 
             return successFlags;
-        }
-
-        /// <summary>
-        /// Set the transforms of the right hand.
-        /// </summary>
-        internal void SetRightHandTransforms(IEnumerable<SkeletonKeyPair> transforms)
-        {
-            rightHandTransforms = transforms;
-        }
-
-        /// <summary>
-        /// Set the transforms of the left hand.
-        /// </summary>
-        internal void SetLeftHandTransforms(IEnumerable<SkeletonKeyPair> transforms)
-        {
-            leftHandTransforms = transforms;
-        }
-
-        /// <summary>
-        /// Set the joints in the hand layout
-        /// </summary>
-        internal void SetJointsInLayout(IEnumerable<XRHandJointID> jointsInLayout)
-        {
-            handJointsInLayout = new bool[XRHandJointID.EndMarker.ToIndex() + 1];
-            foreach(XRHandJointID jointIDInLayout in jointsInLayout)
-            {
-                handJointsInLayout[jointIDInLayout.ToIndex()] = true;
-            }
         }
 
         /// <summary>

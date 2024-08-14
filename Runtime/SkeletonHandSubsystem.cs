@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.XR.Hands;
 using UnityEngine.XR.Hands.ProviderImplementation;
@@ -30,8 +31,21 @@ namespace ubco.ovilab.SkeletonXRHandProvider
         /// <summary>
         /// Initilize the hand subsystem
         /// </summary>
-        public static void MaybeInitializeHandSubsystem(bool disableOtherSubsystems)
+        public static void MaybeInitializeHandSubsystem(bool disableOtherSubsystems, IEnumerable<SkeletonKeyPair> rightTransforms, IEnumerable<SkeletonKeyPair> leftTransforms)
         {
+            IEnumerable<XRHandJointID> jointsInLayout = rightTransforms.Select(el => el.jointID).Union(leftTransforms.Select(el => el.jointID)).Distinct();
+            bool[] handJointsInLayout = new bool[XRHandJointID.EndMarker.ToIndex()];
+            foreach(XRHandJointID jointIDInLayout in jointsInLayout)
+            {
+                handJointsInLayout[jointIDInLayout.ToIndex()] = true;
+            }
+
+            SkeletonXRHandProvider.rightHandTransforms = rightTransforms;
+            SkeletonXRHandProvider.leftHandTransforms = leftTransforms;
+            SkeletonXRHandProvider.handJointsInLayout = handJointsInLayout;
+
+
+
             if (subsystem == null)
             {
                 if (disableOtherSubsystems)
@@ -57,23 +71,6 @@ namespace ubco.ovilab.SkeletonXRHandProvider
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Set the transfosm lists to provide through the subsystem.
-        /// </summary>
-        public static void SetHandTransforms(IEnumerable<SkeletonKeyPair> rightTransforms, IEnumerable<SkeletonKeyPair> leftTransforms)
-        {
-            subsystem.handsProvider.SetRightHandTransforms(rightTransforms);
-            subsystem.handsProvider.SetRightHandTransforms(leftTransforms);
-        }
-
-        /// <summary>
-        /// Set the list of joints tha would be in the layout.
-        /// </summary>
-        public static void SetJointsInLayout(IEnumerable<XRHandJointID> jointsInLayout)
-        {
-            subsystem.handsProvider.SetJointsInLayout(jointsInLayout);
         }
 
         /// <inheritdoc />
