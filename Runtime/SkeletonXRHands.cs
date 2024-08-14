@@ -15,6 +15,8 @@ namespace ubco.ovilab.SkeletonXRHandProvider
 
     public class SkeletonXRHands: MonoBehaviour
     {
+        private static bool instanceExists = false;
+
         [SerializeField, Tooltip("The jointID to transform mapping for the right hand. Changing in runtime has no effect.")]
         private List<SkeletonKeyPair> rightHandTransforms;
 
@@ -26,6 +28,12 @@ namespace ubco.ovilab.SkeletonXRHandProvider
 
         protected void Awake()
         {
+            if (instanceExists)
+            {
+                Debug.LogWarning($"There are more than one SkeletonXRHands. Only the first one that awakes will be used.");
+                return;
+            }
+            instanceExists = true;
             SkeletonHandSubsystem.MaybeInitializeHandSubsystem(disableOtherSubsystems, rightHandTransforms, leftHandTransforms);
         }
 
