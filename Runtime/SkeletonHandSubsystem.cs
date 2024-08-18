@@ -31,7 +31,7 @@ namespace ubco.ovilab.SkeletonXRHandProvider
         /// <summary>
         /// Initilize the hand subsystem
         /// </summary>
-        public static void MaybeInitializeHandSubsystem(bool disableOtherSubsystems, IEnumerable<SkeletonKeyPair> rightTransforms, IEnumerable<SkeletonKeyPair> leftTransforms)
+        public static void MaybeInitializeHandSubsystem(bool disableOtherSubsystems, IEnumerable<SkeletonKeyPair> rightTransforms, IEnumerable<SkeletonKeyPair> leftTransforms, Axis forwardAxis, Axis upAxis)
         {
             IEnumerable<XRHandJointID> jointsInLayout = rightTransforms.Select(el => el.jointID).Union(leftTransforms.Select(el => el.jointID)).Distinct();
             bool[] handJointsInLayout = new bool[XRHandJointID.EndMarker.ToIndex()];
@@ -43,8 +43,8 @@ namespace ubco.ovilab.SkeletonXRHandProvider
             SkeletonXRHandProvider.rightHandTransforms = rightTransforms;
             SkeletonXRHandProvider.leftHandTransforms = leftTransforms;
             SkeletonXRHandProvider.handJointsInLayout = handJointsInLayout;
-
-
+            SkeletonXRHandProvider.forwardAxis = forwardAxis;
+            SkeletonXRHandProvider.upAxis = upAxis;
 
             if (subsystem == null)
             {

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.XR.Hands;
-using UnityEngine.XR.Hands.ProviderImplementation;
 
 namespace ubco.ovilab.SkeletonXRHandProvider
 {
@@ -30,8 +29,39 @@ namespace ubco.ovilab.SkeletonXRHandProvider
         [SerializeField, Tooltip("The jointID to transform mapping for the left hand. Changing in runtime has no effect.")]
         private List<SkeletonKeyPair> leftHandTransforms;
 
+        [SerializeField, Tooltip("This axis will be used as the forward vector of the pose provided to the subsystem.")]
+        private Axis forwardAxis = Axis.ZPlus;
+
+        [SerializeField, Tooltip("This axis will be used as the up vector of the pose provided to the subsystem.")]
+        private Axis upAxis = Axis.YPlus;
+
         [SerializeField, Tooltip("Should other subsystems be enabled/disabled when this is activated. Changing in runtime has no effect.")]
         private bool disableOtherSubsystems;
+
+        /// <summary>
+        /// This axis will be used as the forward vector of the pose provided to the subsystem.
+        /// </summary>
+        public Axis ForwardAxis {
+            get => forwardAxis;
+            set
+            {
+                forwardAxis = value;
+                SkeletonXRHandProvider.forwardAxis = forwardAxis;
+            }
+        }
+
+        /// <summary>
+        /// This axis will be used as the up vector of the pose provided to the subsystem.
+        /// </summary>
+        public Axis UpAxis
+        {
+            get => upAxis;
+            set
+            {
+                upAxis = value;
+                SkeletonXRHandProvider.upAxis = upAxis;
+            }
+        }
 
         protected void Awake()
         {
@@ -41,7 +71,7 @@ namespace ubco.ovilab.SkeletonXRHandProvider
                 return;
             }
             instanceExists = true;
-            SkeletonHandSubsystem.MaybeInitializeHandSubsystem(disableOtherSubsystems, rightHandTransforms, leftHandTransforms);
+            SkeletonHandSubsystem.MaybeInitializeHandSubsystem(disableOtherSubsystems, rightHandTransforms, leftHandTransforms, ForwardAxis, UpAxis);
         }
 
         protected void OnEnable()
@@ -52,6 +82,15 @@ namespace ubco.ovilab.SkeletonXRHandProvider
         protected void OnDisable()
         {
             SkeletonHandSubsystem.subsystem?.Stop();
+        }
+
+        protected void OnValidate()
+        {
+            if (Application.isPlaying)
+            {
+                SkeletonXRHandProvider.forwardAxis = ForwardAxis;
+                SkeletonXRHandProvider.upAxis = UpAxis;
+            }
         }
     }
 }

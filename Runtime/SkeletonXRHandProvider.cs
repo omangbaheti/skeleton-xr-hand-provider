@@ -7,10 +7,22 @@ using UnityEngine.XR.Hands.ProviderImplementation;
 
 namespace ubco.ovilab.SkeletonXRHandProvider
 {
+    public enum Axis
+    {
+        XPlus,
+        XMinus,
+        YPlus,
+        YMinus,
+        ZPlus,
+        ZMinus
+    };
+
     public class SkeletonXRHandProvider : XRHandSubsystemProvider
     {
         internal static IEnumerable<SkeletonKeyPair> rightHandTransforms;
         internal static IEnumerable<SkeletonKeyPair> leftHandTransforms;
+        internal static Axis forwardAxis;
+        internal static Axis upAxis;
         internal static bool[] handJointsInLayout;
 
         /// <inheritdoc />
@@ -73,7 +85,29 @@ namespace ubco.ovilab.SkeletonXRHandProvider
 
                 foreach (SkeletonKeyPair pair in handTransformCache)
                 {
-                    Pose pose = new Pose(pair.transform.position, pair.transform.rotation);
+                    Quaternion rotation = Quaternion.LookRotation(
+                        forwardAxis switch
+                        {
+                            Axis.XPlus => pair.transform.right,
+                            Axis.XMinus => -pair.transform.right,
+                            Axis.YPlus => pair.transform.up,
+                            Axis.YMinus => -pair.transform.up,
+                            Axis.ZPlus => pair.transform.forward,
+                            Axis.ZMinus => -pair.transform.forward,
+                            _ => pair.transform.forward
+                                },
+                        upAxis switch
+                        {
+                            Axis.XPlus => pair.transform.right,
+                            Axis.XMinus => -pair.transform.right,
+                            Axis.YPlus => pair.transform.up,
+                            Axis.YMinus => -pair.transform.up,
+                            Axis.ZPlus => pair.transform.forward,
+                            Axis.ZMinus => -pair.transform.forward,
+                            _ => pair.transform.forward
+                        }
+                    );
+                    Pose pose = new Pose(pair.transform.position, rotation);
                     XRHandJoint joint = XRHandProviderUtility.CreateJoint(handedness, XRHandJointTrackingState.Pose, pair.jointID, pose);
                     int jointIndex = XRHandJointIDUtility.ToIndex(pair.jointID);
                     if (pair.jointID == XRHandJointID.Wrist)
