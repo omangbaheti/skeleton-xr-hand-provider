@@ -15,6 +15,7 @@ namespace ubco.ovilab.SkeletonXRHandProvider.Editor
         SerializedProperty forwardAxis;
         SerializedProperty upAxis;
         SerializedProperty disableOtherSubsystems;
+        SerializedProperty rightHand;
 
         protected void OnEnable()
         {
@@ -29,10 +30,12 @@ namespace ubco.ovilab.SkeletonXRHandProvider.Editor
             forwardAxis = serializedObject.FindProperty("forwardAxis");
             upAxis = serializedObject.FindProperty("upAxis");
             disableOtherSubsystems = serializedObject.FindProperty("disableOtherSubsystems");
+            rightHand = serializedObject.FindProperty("rightHand");
         }
 
         public override void OnInspectorGUI()
         {
+            SkeletonXRHands skeleton = (SkeletonXRHands)target;
             GUI.enabled = false;
             EditorGUILayout.PropertyField(m_script);
             GUI.enabled = !Application.isPlaying;
@@ -45,10 +48,15 @@ namespace ubco.ovilab.SkeletonXRHandProvider.Editor
 
             GUI.enabled = !Application.isPlaying;
             EditorGUILayout.PropertyField(disableOtherSubsystems);
+            EditorGUILayout.PropertyField(rightHand);
             GUI.enabled = true;
             if (showWarn)
             {
                 EditorGUILayout.HelpBox("There are more than one SkeletonXRHands. Only the first one that awakes will be used.", MessageType.Warning);
+            }
+            if (GUILayout.Button("AutoPopulate"))
+            {
+                skeleton.AutoPopulate();
             }
             serializedObject.ApplyModifiedProperties();
         }
